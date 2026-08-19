@@ -53,6 +53,11 @@ public class AdminController {
             .count();
         model.addAttribute("pendingDoctorCount", pendingCount);
         
+        long pendingVendorCount = userService.getAllUsers().stream()
+            .filter(u -> u.getRole() == in.sp.main.entity.Role.VENDOR && !u.isApproved())
+            .count();
+        model.addAttribute("pendingVendorCount", pendingVendorCount);
+        
         return "admin/dashboard";
     }
 
@@ -94,9 +99,48 @@ public class AdminController {
         return "redirect:/admin/pending-doctors";
     }
 
+    @GetMapping("/pending-vendors")
+    public String listPendingVendors(Model model) {
+        List<User> pendingVendors = userService.getAllUsers().stream()
+                .filter(u -> u.getRole() == in.sp.main.entity.Role.VENDOR && !u.isApproved())
+                .toList();
+        model.addAttribute("pendingVendors", pendingVendors);
+        return "admin/pending-vendors";
+    }
+
+    @PostMapping("/approve-vendor")
+    public String approveVendor(@org.springframework.web.bind.annotation.RequestParam("id") Long id) {
+        User user = userService.findById(id);
+        if (user != null && user.getRole() == in.sp.main.entity.Role.VENDOR) {
+            user.setApproved(true);
+            userService.saveUser(user);
+        }
+        return "redirect:/admin/pending-vendors";
+    }
+
     @GetMapping("/equipment")
     public String listEquipmentRequests(Model model) {
         model.addAttribute("equipmentRequests", equipmentRequestRepository.findAll());
         return "admin/equipment";
+    }
+
+    @PostMapping("/revoke-access")
+    public String revokeAccess(@org.springframework.web.bind.annotation.RequestParam("id") Long id, @org.springframework.web.bind.annotation.RequestParam("returnUrl") String returnUrl) {
+        User user = userService.findById(id);
+        if (user != null) {
+            user.setLocked(true);
+            userService.saveUser(user);
+        }
+        return "redirect:" + returnUrl;
+    }
+
+    @PostMapping("/restore-access")
+    public String restoreAccess(@org.springframework.web.bind.annotation.RequestParam("id") Long id, @org.springframework.web.bind.annotation.RequestParam("returnUrl") String returnUrl) {
+        User user = userService.findById(id);
+        if (user != null) {
+            user.setLocked(false);
+            userService.saveUser(user);
+        }
+        return "redirect:" + returnUrl;
     }
 }

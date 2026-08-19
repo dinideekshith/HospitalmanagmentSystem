@@ -29,6 +29,7 @@
                     <th>Mobile</th>
                     <th>Specialization</th>
                     <th>Experience</th>
+                    <th>Status / Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -39,6 +40,26 @@
                         <td>${doctor.user.mobileNumber}</td>
                         <td>${doctor.specialization != null ? doctor.specialization : 'Not Set'}</td>
                         <td>${doctor.experienceYears != null ? doctor.experienceYears : 0} Years</td>
+                        <td>
+                            <c:choose>
+                                <c:when test="${doctor.user.locked}">
+                                    <span class="badge badge-error mb-1" style="display:block; text-align:center;">Revoked</span>
+                                    <form action="/admin/restore-access" method="post" style="display:inline;">
+                                        <input type="hidden" name="id" value="${doctor.user.id}">
+                                        <input type="hidden" name="returnUrl" value="/admin/doctors">
+                                        <button type="submit" class="btn btn-sm btn-outline">Restore Access</button>
+                                    </form>
+                                </c:when>
+                                <c:otherwise>
+                                    <span class="badge badge-success mb-1" style="display:block; text-align:center;">Active</span>
+                                    <form action="/admin/revoke-access" method="post" style="display:inline;">
+                                        <input type="hidden" name="id" value="${doctor.user.id}">
+                                        <input type="hidden" name="returnUrl" value="/admin/doctors">
+                                        <button type="submit" class="btn btn-sm btn-error">Revoke Access</button>
+                                    </form>
+                                </c:otherwise>
+                            </c:choose>
+                        </td>
                     </tr>
                 </c:forEach>
             </tbody>

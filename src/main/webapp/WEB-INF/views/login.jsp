@@ -17,7 +17,7 @@
         
         .split-image-side {
             flex: 1;
-            background: url('/images/doctor_portrait.jpg') no-repeat center top;
+            background: url('/images/doctor_portrait.jpg') no-repeat center center;
             background-size: cover;
             display: none;
         }

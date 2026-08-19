@@ -40,7 +40,12 @@
             <div class="stat-card" style="cursor:pointer;" onclick="window.location.href='/admin/pending-doctors'">
                 <i class="fas fa-user-clock"></i>
                 <h3>${pendingDoctorCount}</h3>
-                <p>Pending Approvals</p>
+                <p>Pending Doctors</p>
+            </div>
+            <div class="stat-card" style="cursor:pointer;" onclick="window.location.href='/admin/pending-vendors'">
+                <i class="fas fa-store-slash"></i>
+                <h3>${pendingVendorCount}</h3>
+                <p>Pending Vendors</p>
             </div>
             <div class="stat-card" style="cursor:pointer;" onclick="window.location.href='/admin/equipment'">
                 <i class="fas fa-box-open"></i>

@@ -22,14 +22,20 @@
         <div class="form-card" style="padding: 0; overflow: hidden;">
             <table class="data-table" style="margin-top: 0; box-shadow: none;">
                 <thead>
-                    <tr><th>Patient Name</th><th>Date & Time</th><th>Status</th></tr>
+                    <tr><th>Patient Name</th><th>Date & Time</th><th>Status</th><th>Action</th></tr>
                 </thead>
                 <tbody>
                     <c:forEach var="app" items="${appointments}">
                         <tr>
                             <td><span style="font-weight: 500;">${app.patient.name}</span></td>
                             <td>${app.appointmentDate} <br><span style="font-size: 0.8rem; color: var(--text-secondary);">${app.appointmentTime}</span></td>
-                            <td><span class="badge ${app.status == 'PENDING' ? 'badge-warning' : 'badge-success'}">${app.status}</span></td>
+                            <td><span class="badge ${app.status == 'PENDING' ? 'badge-warning' : (app.status == 'REJECTED' ? 'badge-error' : 'badge-success')}">${app.status}</span></td>
+                            <td>
+                                <c:if test="${app.status == 'PENDING'}">
+                                    <a href="/doctor/appointment/accept/${app.id}" class="btn btn-sm btn-primary" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; margin-right: 0.5rem;">Confirm</a>
+                                    <a href="/doctor/appointment/reject/${app.id}" class="btn btn-sm btn-outline" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; border-color: #F56565; color: #F56565;">Reject</a>
+                                </c:if>
+                            </td>
                         </tr>
                     </c:forEach>
                     <c:if test="${empty appointments}"><tr><td colspan="3" class="text-center">No appointments found.</td></tr></c:if>

@@ -35,6 +35,9 @@ public class VendorController {
     @GetMapping("/dashboard")
     public String dashboard(Principal principal, Model model) {
         User user = userService.findByEmail(principal.getName());
+        if (!user.isApproved()) {
+            return "redirect:/vendor/pending-approval";
+        }
         model.addAttribute("user", user);
         
         Vendor vendor = vendorRepository.findById(user.getId()).orElse(null);
@@ -57,6 +60,9 @@ public class VendorController {
     @GetMapping("/profile")
     public String profile(Principal principal, Model model) {
         User user = userService.findByEmail(principal.getName());
+        if (!user.isApproved()) {
+            return "redirect:/vendor/pending-approval";
+        }
         model.addAttribute("user", user);
         Vendor vendor = vendorRepository.findById(user.getId()).orElse(new Vendor());
         model.addAttribute("vendor", vendor);
@@ -66,6 +72,9 @@ public class VendorController {
     @PostMapping("/profile")
     public String updateProfile(Principal principal, @ModelAttribute Vendor vendorDetails) {
         User user = userService.findByEmail(principal.getName());
+        if (!user.isApproved()) {
+            return "redirect:/vendor/pending-approval";
+        }
         Vendor vendor = vendorRepository.findById(user.getId()).orElse(new Vendor());
         vendor.setUser(user);
         vendor.setBusinessName(vendorDetails.getBusinessName());
@@ -101,6 +110,16 @@ public class VendorController {
             labTestRequestRepository.save(labTest);
         }
         return "redirect:/vendor/dashboard";
+    }
+
+    @GetMapping("/pending-approval")
+    public String pendingApproval(Principal principal, Model model) {
+        User user = userService.findByEmail(principal.getName());
+        if (user.isApproved()) {
+            return "redirect:/vendor/dashboard";
+        }
+        model.addAttribute("user", user);
+        return "vendor/pending-approval";
     }
 
     @PostMapping("/deliver-equipment")

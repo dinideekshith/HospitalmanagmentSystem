@@ -29,6 +29,7 @@
                     <th>Mobile</th>
                     <th>Business Name</th>
                     <th>Vendor Type</th>
+                    <th>Status / Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -39,6 +40,26 @@
                         <td>${vendor.user.mobileNumber}</td>
                         <td>${vendor.businessName != null ? vendor.businessName : 'Not Set'}</td>
                         <td>${vendor.vendorType != null ? vendor.vendorType : 'Not Set'}</td>
+                        <td>
+                            <c:choose>
+                                <c:when test="${vendor.user.locked}">
+                                    <span class="badge badge-error mb-1" style="display:block; text-align:center;">Revoked</span>
+                                    <form action="/admin/restore-access" method="post" style="display:inline;">
+                                        <input type="hidden" name="id" value="${vendor.user.id}">
+                                        <input type="hidden" name="returnUrl" value="/admin/vendors">
+                                        <button type="submit" class="btn btn-sm btn-outline">Restore Access</button>
+                                    </form>
+                                </c:when>
+                                <c:otherwise>
+                                    <span class="badge badge-success mb-1" style="display:block; text-align:center;">Active</span>
+                                    <form action="/admin/revoke-access" method="post" style="display:inline;">
+                                        <input type="hidden" name="id" value="${vendor.user.id}">
+                                        <input type="hidden" name="returnUrl" value="/admin/vendors">
+                                        <button type="submit" class="btn btn-sm btn-error">Revoke Access</button>
+                                    </form>
+                                </c:otherwise>
+                            </c:choose>
+                        </td>
                     </tr>
                 </c:forEach>
             </tbody>

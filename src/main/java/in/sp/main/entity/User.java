@@ -32,6 +32,8 @@ public class User {
 
     private String otpCode;
 
+    private boolean isLocked = false;
+
     // Default constructor
     public User() {}
 
@@ -54,4 +56,6 @@ public class User {
     public void setApproved(boolean approved) { isApproved = approved; }
     public String getOtpCode() { return otpCode; }
     public void setOtpCode(String otpCode) { this.otpCode = otpCode; }
+    public boolean isLocked() { return isLocked; }
+    public void setLocked(boolean locked) { isLocked = locked; }
 }

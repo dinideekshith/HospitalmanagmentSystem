@@ -55,7 +55,7 @@ public class AuthController {
         boolean verified = userService.verifyOtp(email, otp);
         if (verified) {
             User user = userService.findByEmail(email);
-            if (user != null && user.getRole() == Role.DOCTOR && !user.isApproved()) {
+            if (user != null && (user.getRole() == Role.DOCTOR || user.getRole() == Role.VENDOR) && !user.isApproved()) {
                 redirectAttributes.addFlashAttribute("success", "Email verified! Your registration request has been sent to the Admin. You can log in once approved.");
             } else {
                 redirectAttributes.addFlashAttribute("success", "Account verified successfully! Please login.");

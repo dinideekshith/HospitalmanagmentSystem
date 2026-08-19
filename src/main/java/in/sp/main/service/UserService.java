@@ -41,7 +41,7 @@ public class UserService {
         user.setOtpCode(otp);
         user.setVerified(false);
         
-        if (user.getRole() == Role.DOCTOR) {
+        if (user.getRole() == Role.DOCTOR || user.getRole() == Role.VENDOR) {
             user.setApproved(false);
         } else {
             user.setApproved(true);

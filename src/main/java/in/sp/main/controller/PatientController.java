@@ -135,15 +135,47 @@ public class PatientController {
         return "patient/book-appointment";
     }
     
+    @GetMapping("/available-slots")
+    @org.springframework.web.bind.annotation.ResponseBody
+    public java.util.List<String> getAvailableSlots(@RequestParam Long doctorId, @RequestParam String date) {
+        java.util.List<String> allSlots = java.util.Arrays.asList(
+            "10:00 - 11:00", "11:00 - 12:00", "12:00 - 13:00", 
+            "13:00 - 14:00", "14:00 - 15:00", "15:00 - 16:00", "16:00 - 17:00"
+        );
+        
+        java.util.List<Appointment> existing = appointmentRepository.findByDoctorId(doctorId);
+        java.util.List<String> booked = existing.stream()
+            .filter(a -> a.getAppointmentDate().equals(date) && !"CANCELLED".equals(a.getStatus()))
+            .map(Appointment::getAppointmentTime)
+            .toList();
+            
+        java.util.List<String> available = new java.util.ArrayList<>(allSlots);
+        available.removeAll(booked);
+        
+        return available;
+    }
+
     @PostMapping("/book-appointment")
     public String bookAppointment(Principal principal, 
                                   @RequestParam Long doctorId, 
                                   @RequestParam String appointmentDate, 
-                                  @RequestParam String appointmentTime) {
+                                  @RequestParam String appointmentTime,
+                                  org.springframework.web.servlet.mvc.support.RedirectAttributes redirectAttributes) {
         User patientUser = userService.findByEmail(principal.getName());
         Doctor doctor = doctorRepository.findById(doctorId).orElse(null);
         
         if (doctor != null) {
+            // Check double booking
+            boolean isBooked = appointmentRepository.findByDoctorId(doctorId).stream()
+                .anyMatch(a -> a.getAppointmentDate().equals(appointmentDate) && 
+                               a.getAppointmentTime().equals(appointmentTime) && 
+                               !"CANCELLED".equals(a.getStatus()));
+                               
+            if (isBooked) {
+                redirectAttributes.addFlashAttribute("error", "The selected time slot is already booked. Please choose another.");
+                return "redirect:/patient/book-appointment";
+            }
+            
             Appointment appointment = new Appointment();
             appointment.setPatient(patientUser);
             appointment.setDoctor(doctor.getUser());
