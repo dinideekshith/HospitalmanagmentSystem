@@ -52,6 +52,33 @@
                 <h3>${equipmentRequestCount}</h3>
                 <p>Equipment Requests</p>
             </div>
+            
+            <!-- New Modules -->
+            <div class="stat-card" style="cursor:pointer;" onclick="window.location.href='/admin/ambulances'">
+                <i class="fas fa-ambulance"></i>
+                <h3>${ambulanceCount}</h3>
+                <p>Ambulances</p>
+            </div>
+            <div class="stat-card" style="cursor:pointer;" onclick="window.location.href='/admin/beds'">
+                <i class="fas fa-bed"></i>
+                <h3>${bedCount}</h3>
+                <p>Hospital Beds</p>
+            </div>
+            <div class="stat-card" style="cursor:pointer;" onclick="window.location.href='/admin/emergency'">
+                <i class="fas fa-heartbeat" style="color: red;"></i>
+                <h3>${emergencyCount}</h3>
+                <p>Emergency SOS</p>
+            </div>
+            <div class="stat-card" style="cursor:pointer;" onclick="window.location.href='/admin/blood-bank'">
+                <i class="fas fa-tint" style="color: darkred;"></i>
+                <h3>Blood Bank</h3>
+                <p>Manage Stock</p>
+            </div>
+            <div class="stat-card" style="cursor:pointer;" onclick="window.location.href='/admin/inventory'">
+                <i class="fas fa-pills"></i>
+                <h3>Inventory</h3>
+                <p>Manage Medicines</p>
+            </div>
         </div>
     </div>
 </body>

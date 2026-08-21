@@ -84,6 +84,13 @@
                 <h3>Equipment Delivery</h3>
                 <p>Track equipment approval, dispatch and delivery status.</p>
             </a>
+            
+            <a href="/doctor/blood-bank" class="service-card" style="position: relative;">
+                <span class="badge badge-success" style="position: absolute; top: 1rem; right: 1rem;">NEW</span>
+                <div class="service-card-icon" style="background: #FFF5F5; color: darkred;"><i class="fas fa-tint"></i></div>
+                <h3>Blood Bank</h3>
+                <p>Request blood units for critical patients.</p>
+            </a>
         </div>
         
         <div class="quick-actions">

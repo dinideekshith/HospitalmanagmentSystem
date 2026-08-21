@@ -17,6 +17,9 @@ import in.sp.main.repository.DoctorRepository;
 import in.sp.main.repository.PatientRepository;
 import in.sp.main.repository.VendorRepository;
 import in.sp.main.repository.EquipmentRequestRepository;
+import in.sp.main.repository.AmbulanceRepository;
+import in.sp.main.repository.BedRepository;
+import in.sp.main.repository.EmergencyRequestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @Controller
@@ -38,6 +41,15 @@ public class AdminController {
     @Autowired
     private EquipmentRequestRepository equipmentRequestRepository;
 
+    @Autowired
+    private AmbulanceRepository ambulanceRepository;
+
+    @Autowired
+    private BedRepository bedRepository;
+
+    @Autowired
+    private EmergencyRequestRepository emergencyRequestRepository;
+
     @GetMapping("/dashboard")
     public String dashboard(Principal principal, Model model) {
         User user = userService.findByEmail(principal.getName());
@@ -57,6 +69,11 @@ public class AdminController {
             .filter(u -> u.getRole() == in.sp.main.entity.Role.VENDOR && !u.isApproved())
             .count();
         model.addAttribute("pendingVendorCount", pendingVendorCount);
+        
+        // New Analytics
+        model.addAttribute("ambulanceCount", ambulanceRepository.count());
+        model.addAttribute("bedCount", bedRepository.count());
+        model.addAttribute("emergencyCount", emergencyRequestRepository.count());
         
         return "admin/dashboard";
     }

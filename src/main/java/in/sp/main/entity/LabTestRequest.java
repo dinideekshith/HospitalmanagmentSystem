@@ -21,10 +21,17 @@ public class LabTestRequest {
 
     private String testName;
     private LocalDate requestDate;
-    private String status; // PENDING, COMPLETED
+    
+    // Advanced fields
+    private String status; // REQUESTED, SAMPLE_COLLECTED, IN_PROGRESS, COMPLETED, CANCELLED
+    private String sampleCollectionStatus; // PENDING, COLLECTED
+    private String testStatus; // PENDING, PROCESSING, READY
     
     @Column(columnDefinition = "TEXT")
     private String results;
+    
+    private String reportUrl;
+    private LocalDate completionDate;
 
     public LabTestRequest() {}
 
@@ -42,4 +49,12 @@ public class LabTestRequest {
     public void setStatus(String status) { this.status = status; }
     public String getResults() { return results; }
     public void setResults(String results) { this.results = results; }
+    public String getSampleCollectionStatus() { return sampleCollectionStatus; }
+    public void setSampleCollectionStatus(String sampleCollectionStatus) { this.sampleCollectionStatus = sampleCollectionStatus; }
+    public String getTestStatus() { return testStatus; }
+    public void setTestStatus(String testStatus) { this.testStatus = testStatus; }
+    public String getReportUrl() { return reportUrl; }
+    public void setReportUrl(String reportUrl) { this.reportUrl = reportUrl; }
+    public LocalDate getCompletionDate() { return completionDate; }
+    public void setCompletionDate(LocalDate completionDate) { this.completionDate = completionDate; }
 }

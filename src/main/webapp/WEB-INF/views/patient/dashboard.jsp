@@ -40,6 +40,12 @@
             <p class="text-secondary" style="font-size: 0.9rem;">Everything you need for your healthcare</p>
         </div>
         
+        <c:if test="${not empty param.sos}">
+            <div class="alert alert-danger" style="background-color: #FED7D7; color: #C53030; border: 1px solid #FC8181; padding: 1rem; border-radius: 8px; margin-bottom: 2rem;">
+                <i class="fas fa-exclamation-triangle"></i> <strong>EMERGENCY SOS TRIGGERED!</strong> The hospital administration has been alerted and an ambulance is being dispatched if available.
+            </div>
+        </c:if>
+        
         <div class="dashboard-grid">
             <a href="/patient/profile" class="service-card">
                 <div class="service-card-icon" style="background: #E8F4F4; color: var(--primary-teal);"><i class="fas fa-user"></i></div>
@@ -80,6 +86,22 @@
                 <div class="service-card-icon" style="background: #FFFAF0; color: #DD6B20;"><i class="fas fa-vial"></i></div>
                 <h3>Lab Results</h3>
                 <p>View requested lab tests and diagnostic reports.</p>
+                <i class="fas fa-arrow-right" style="position: absolute; bottom: 1.5rem; right: 1.5rem; color: var(--primary-teal); opacity: 0.5;"></i>
+            </a>
+            
+            <!-- NEW CARDS -->
+            <form action="/patient/sos/trigger" method="POST" style="margin:0;">
+                <button type="submit" class="service-card" style="width:100%; text-align:left; background: #FFF5F5; border: 2px solid #FEB2B2; cursor: pointer;">
+                    <div class="service-card-icon" style="background: #FED7D7; color: #E53E3E;"><i class="fas fa-heartbeat"></i></div>
+                    <h3 style="color: #C53030;">Emergency SOS</h3>
+                    <p style="color: #E53E3E;">Trigger an immediate critical alert to the hospital.</p>
+                </button>
+            </form>
+            
+            <a href="/patient/ambulance/request" class="service-card">
+                <div class="service-card-icon" style="background: #E6FFFA; color: #319795;"><i class="fas fa-ambulance"></i></div>
+                <h3>Request Ambulance</h3>
+                <p>Dispatch an ambulance to your location immediately.</p>
                 <i class="fas fa-arrow-right" style="position: absolute; bottom: 1.5rem; right: 1.5rem; color: var(--primary-teal); opacity: 0.5;"></i>
             </a>
         </div>

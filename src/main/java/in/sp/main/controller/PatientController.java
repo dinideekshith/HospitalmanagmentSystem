@@ -210,4 +210,32 @@ public class PatientController {
             pdfService.exportMedicalRecordToPdf(response, r);
         }
     }
+    @Autowired
+    private in.sp.main.repository.AmbulanceRequestRepository ambulanceRequestRepository;
+
+    @GetMapping("/ambulance/request")
+    public String requestAmbulanceForm(Principal principal, Model model) {
+        User user = userService.findByEmail(principal.getName());
+        model.addAttribute("user", user);
+        return "patient/ambulance";
+    }
+
+    @PostMapping("/ambulance/request")
+    public String submitAmbulanceRequest(@RequestParam String location, @RequestParam String emergencyType, Principal principal) {
+        User user = userService.findByEmail(principal.getName());
+        Patient patient = patientRepository.findById(user.getId()).orElse(null);
+        
+        if (patient != null) {
+            in.sp.main.entity.AmbulanceRequest req = new in.sp.main.entity.AmbulanceRequest();
+            req.setPatient(patient);
+            req.setPickupLocation(location);
+            req.setDestination("TBD");
+            req.setEmergency(true);
+            req.setRequestTime(java.time.LocalDateTime.now());
+            req.setStatus("PENDING");
+            ambulanceRequestRepository.save(req);
+        }
+        
+        return "redirect:/patient/ambulance/request?success=true";
+    }
 }

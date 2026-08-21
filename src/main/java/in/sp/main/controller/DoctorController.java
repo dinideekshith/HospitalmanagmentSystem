@@ -218,6 +218,45 @@ public class DoctorController {
         return "doctor/equipment-delivery";
     }
 
+    @Autowired
+    private in.sp.main.repository.BloodRequestRepository bloodRequestRepository;
+    
+    @Autowired
+    private in.sp.main.repository.PatientRepository patientRepository;
+
+    @GetMapping("/blood-bank")
+    public String bloodBank(Principal principal, Model model) {
+        User user = userService.findByEmail(principal.getName());
+        model.addAttribute("user", user);
+        model.addAttribute("bloodRequests", bloodRequestRepository.findByDoctorUserId(user.getId()));
+        
+        List<Appointment> appointments = appointmentRepository.findByDoctorId(user.getId());
+        List<User> patients = appointments.stream().map(Appointment::getPatient).distinct().toList();
+        model.addAttribute("patients", patients);
+        
+        return "doctor/blood-bank";
+    }
+
+    @PostMapping("/blood-bank/request")
+    public String requestBlood(Principal principal, @RequestParam Long patientId, @RequestParam String bloodGroup, @RequestParam int units, @RequestParam String urgency) {
+        User user = userService.findByEmail(principal.getName());
+        Doctor doctor = doctorRepository.findById(user.getId()).orElse(null);
+        in.sp.main.entity.Patient patient = patientRepository.findById(patientId).orElse(null);
+        
+        if (patient != null && doctor != null) {
+            in.sp.main.entity.BloodRequest req = new in.sp.main.entity.BloodRequest();
+            req.setDoctor(doctor);
+            req.setPatient(patient);
+            req.setBloodGroup(bloodGroup);
+            req.setUnitsRequested(units);
+            req.setUrgency(urgency);
+            req.setRequestDate(java.time.LocalDateTime.now());
+            req.setStatus("PENDING");
+            bloodRequestRepository.save(req);
+        }
+        return "redirect:/doctor/blood-bank";
+    }
+
     @GetMapping("/add-prescription")
     public String showAddPrescriptionForm(Principal principal, Model model) {
         User doctorUser = userService.findByEmail(principal.getName());
