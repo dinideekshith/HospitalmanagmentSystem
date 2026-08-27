@@ -41,4 +41,12 @@ public class Appointment {
     public void setAppointmentTime(String appointmentTime) { this.appointmentTime = appointmentTime; }
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
+    
+    private String meetUrl;
+    public String getMeetUrl() { return meetUrl; }
+    public void setMeetUrl(String meetUrl) { this.meetUrl = meetUrl; }
+    
+    private String documentUrl;
+    public String getDocumentUrl() { return documentUrl; }
+    public void setDocumentUrl(String documentUrl) { this.documentUrl = documentUrl; }
 }

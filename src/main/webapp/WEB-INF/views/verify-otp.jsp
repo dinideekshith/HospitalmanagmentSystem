@@ -20,6 +20,12 @@
                 <div class="alert alert-error">${error}</div>
             </c:if>
 
+            <c:if test="${demoOtp != null}">
+                <div class="alert" style="background: #E6FFFA; color: #319795; border: 1px solid #319795;">
+                    <strong>[Demo Mode]</strong> Your OTP is: <span style="font-size: 1.2rem; font-weight: bold;">${demoOtp}</span>
+                </div>
+            </c:if>
+
             <form action="/verify-otp" method="post">
                 <div class="form-group">
                     <label>Email Address</label>

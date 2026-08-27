@@ -121,6 +121,50 @@
                 </div>
             </div>
         </div>
+        
+        <!-- NEW WIDGETS FOR FEATURE 3 -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 2rem;">
+            <!-- Blood Inventory -->
+            <div class="card" style="padding: 1.5rem;">
+                <h3 style="margin-bottom: 1.5rem; color: #2D3748;"><i class="fas fa-boxes"></i> Live Blood Inventory</h3>
+                <table class="table">
+                    <thead>
+                        <tr><th>Blood Group</th><th>Available Units</th></tr>
+                    </thead>
+                    <tbody>
+                        <c:forEach var="inv" items="${bloodInventory}">
+                            <tr>
+                                <td><span style="font-weight:bold; color: darkred;">${inv.bloodGroup}</span></td>
+                                <td>${inv.unitsAvailable}</td>
+                            </tr>
+                        </c:forEach>
+                        <c:if test="${empty bloodInventory}"><tr><td colspan="2" class="text-center">Inventory data unavailable.</td></tr></c:if>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Request Blood Test -->
+            <div class="card" style="padding: 1.5rem; height: fit-content;">
+                <h3 style="margin-bottom: 1.5rem; color: #2D3748;"><i class="fas fa-vial"></i> Request Blood Test / Sample</h3>
+                <form action="/doctor/blood-bank/request-test" method="POST">
+                    <div class="form-group" style="margin-bottom: 1rem;">
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Patient</label>
+                        <select name="patientId" class="form-control" required style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px;">
+                            <option value="">Select Patient</option>
+                            <c:forEach items="${patients}" var="p">
+                                <option value="${p.id}">${p.name}</option>
+                            </c:forEach>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group" style="margin-bottom: 1rem;">
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Test Details / Instructions</label>
+                        <input type="text" name="testDetails" class="form-control" placeholder="e.g. CBC, Hemoglobin, Lipid Profile" required style="width: 100%; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px;">
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Submit Blood Test Request</button>
+                </form>
+            </div>
+        </div>
     </div>
 </body>
 </html>

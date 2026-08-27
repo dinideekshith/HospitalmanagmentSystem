@@ -36,13 +36,21 @@ public class AuthController {
 
     @PostMapping("/register")
     public String registerUser(@ModelAttribute User user, RedirectAttributes redirectAttributes) {
-        if (userService.findByEmail(user.getEmail()) != null) {
-            redirectAttributes.addFlashAttribute("error", "Email already exists!");
+        try {
+            if (userService.findByEmail(user.getEmail()) != null) {
+                redirectAttributes.addFlashAttribute("error", "Email already exists!");
+                return "redirect:/register";
+            }
+            User savedUser = userService.registerUser(user);
+            redirectAttributes.addFlashAttribute("email", user.getEmail());
+            // Add OTP to flash attributes for demo/local purposes where email might fail
+            redirectAttributes.addFlashAttribute("demoOtp", savedUser.getOtpCode());
+            return "redirect:/verify-otp";
+        } catch (Exception e) {
+            e.printStackTrace();
+            redirectAttributes.addFlashAttribute("error", "Registration failed: " + e.getMessage());
             return "redirect:/register";
         }
-        userService.registerUser(user);
-        redirectAttributes.addFlashAttribute("email", user.getEmail());
-        return "redirect:/verify-otp";
     }
 
     @GetMapping("/verify-otp")

@@ -20,12 +20,12 @@
                         <c:out value="${user.name.substring(0,1).toUpperCase()}" />
                     </div>
                     <div>
-                        <div style="font-weight: 600;">Dr. ${user.name.split(' ')[0]}</div>
+                        <div style="font-weight: 600;">${user.name}</div>
                         <div style="font-size: 0.75rem; color: rgba(255,255,255,0.8);">Doctor</div>
                     </div>
                 </div>
-                <a href="/doctor/profile" class="btn btn-outline" style="border-color: rgba(255,255,255,0.5); color: white;">Profile</a>
-                <a href="/logout" class="btn btn-primary" style="background: white; color: var(--primary-teal);">Logout</a>
+                <a href="/doctor/messages" class="btn btn-outline" style="border-color: rgba(255,255,255,0.5); color: white;"><i class="fas fa-comments"></i> Chat / Messages</a>
+                <a href="/logout" class="btn btn-outline" style="border-color: rgba(255,255,255,0.5); color: white;">Logout</a>
             </div>
         </div>
     </nav>

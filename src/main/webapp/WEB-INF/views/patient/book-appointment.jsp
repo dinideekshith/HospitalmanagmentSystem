@@ -26,7 +26,7 @@
             <c:if test="${not empty error}">
                 <div class="alert alert-error" style="color: red; margin-bottom: 15px; text-align: center;">${error}</div>
             </c:if>
-            <form action="/patient/book-appointment" method="post">
+            <form action="/patient/book-appointment" method="post" enctype="multipart/form-data">
                 <div class="form-group">
                     <label>Select Doctor</label>
                     <select name="doctorId" id="doctorId" class="form-control" required>
@@ -45,6 +45,12 @@
                     <select name="appointmentTime" id="appointmentTime" class="form-control" required disabled>
                         <option value="">-- Select Date & Doctor First --</option>
                     </select>
+                </div>
+                
+                <div class="form-group" style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid #E2E8F0;">
+                    <label style="color: var(--primary-teal);"><i class="fas fa-file-upload"></i> Upload Past Prescription / Medical Records (Optional)</label>
+                    <p style="font-size: 0.85rem; color: #718096; margin-bottom: 0.5rem;">Help your new doctor understand your medical history by uploading previous records.</p>
+                    <input type="file" name="document" class="form-control" accept=".pdf,.png,.jpg,.jpeg">
                 </div>
                 <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Request Appointment</button>
             </form>

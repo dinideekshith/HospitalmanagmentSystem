@@ -24,7 +24,8 @@
                         <div style="font-size: 0.75rem; color: rgba(255,255,255,0.8);">Patient</div>
                     </div>
                 </div>
-                <a href="/logout" class="btn btn-outline" style="border-color: rgba(255,255,255,0.5); color: white;">Logout</a>
+                <a href="/patient/messages" class="btn btn-outline" style="border-color: rgba(255,255,255,0.5); color: white;"><i class="fas fa-comments"></i> Chat / Messages</a>
+                <a href="/logout" class="btn btn-primary" style="background: white; color: var(--primary-teal);">Logout</a>
             </div>
         </div>
     </nav>
@@ -104,6 +105,65 @@
                 <p>Dispatch an ambulance to your location immediately.</p>
                 <i class="fas fa-arrow-right" style="position: absolute; bottom: 1.5rem; right: 1.5rem; color: var(--primary-teal); opacity: 0.5;"></i>
             </a>
+        </div>
+        
+        <!-- NEW WIDGETS -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 2rem;">
+            <!-- Bed Selection -->
+            <div class="card" style="background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+                <h3 style="color: var(--primary-teal); margin-bottom: 1rem;"><i class="fas fa-bed"></i> Bed Assignment</h3>
+                <c:choose>
+                    <c:when test="${not empty assignedBed}">
+                        <div class="alert alert-success" style="background: #F0FFF4; border-left: 4px solid #48BB78; padding: 1rem;">
+                            <strong>Bed Number:</strong> ${assignedBed.bedNumber} <br/>
+                            <strong>Room:</strong> ${assignedBed.room.roomNumber} (${assignedBed.room.roomType})
+                        </div>
+                    </c:when>
+                    <c:otherwise>
+                        <form action="/patient/select-bed" method="POST">
+                            <div class="form-group">
+                                <label>Select Preferred Bed / Room Type:</label>
+                                <select name="bedId" class="form-control" required style="width: 100%; padding: 0.75rem; border-radius: 8px; border: 1px solid #E2E8F0; margin-bottom: 1rem;">
+                                    <option value="">-- Choose a Bed --</option>
+                                    <c:forEach var="bed" items="${availableBeds}">
+                                        <option value="${bed.id}">Room ${bed.room.roomNumber} (${bed.room.roomType}) - Bed ${bed.bedNumber}</option>
+                                    </c:forEach>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary" style="width: 100%;">Confirm Bed Selection</button>
+                        </form>
+                    </c:otherwise>
+                </c:choose>
+            </div>
+            
+            <!-- Ambulance Tracker -->
+            <div class="card" style="background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+                <h3 style="color: var(--primary-teal); margin-bottom: 1rem;"><i class="fas fa-ambulance"></i> Live Ambulance Tracker</h3>
+                <c:choose>
+                    <c:when test="${not empty ambulanceRequests}">
+                        <c:forEach var="req" items="${ambulanceRequests}">
+                            <div style="border: 1px solid #E2E8F0; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+                                <strong>Status:</strong> 
+                                <span class="badge" style="background: #4299E1; color: white; padding: 0.2rem 0.5rem; border-radius: 4px;">${req.status}</span><br/>
+                                <c:if test="${not empty req.ambulance}">
+                                    <strong>Driver:</strong> ${req.ambulance.driverName} (${req.ambulance.driverContact})<br/>
+                                    <strong>Vehicle No:</strong> ${req.ambulance.vehicleNumber}<br/>
+                                </c:if>
+                                <div style="display: flex; justify-content: space-between; margin-top: 1rem; color: #A0AEC0; font-size: 0.8rem;">
+                                    <span style="${req.status == 'CREATED' || req.status == 'ASSIGNED' ? 'color:#48BB78;font-weight:bold;' : ''}">Dispatched</span>
+                                    <span>&rarr;</span>
+                                    <span style="${req.status == 'ON_THE_WAY' ? 'color:#48BB78;font-weight:bold;' : ''}">Arriving</span>
+                                    <span>&rarr;</span>
+                                    <span style="${req.status == 'COMPLETED' ? 'color:#48BB78;font-weight:bold;' : ''}">Completed</span>
+                                </div>
+                            </div>
+                        </c:forEach>
+                    </c:when>
+                    <c:otherwise>
+                        <p class="text-secondary">No active ambulance requests.</p>
+                    </c:otherwise>
+                </c:choose>
+            </div>
         </div>
         
         <p class="text-center mt-4 text-secondary" style="font-size: 0.8rem;">

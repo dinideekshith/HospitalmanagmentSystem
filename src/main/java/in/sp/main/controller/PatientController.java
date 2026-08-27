@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PathVariable;
 import java.security.Principal;
 import java.util.List;
 import org.springframework.ui.Model;
@@ -47,12 +48,46 @@ public class PatientController {
     @Autowired
     private in.sp.main.repository.LabTestRequestRepository labTestRequestRepository;
 
+    @Autowired
+    private in.sp.main.repository.BedRepository bedRepository;
+
     @GetMapping("/dashboard")
     public String dashboard(Principal principal, Model model) {
         User user = userService.findByEmail(principal.getName());
         model.addAttribute("user", user);
         
+        // Bed Selection Data
+        Patient patient = patientRepository.findById(user.getId()).orElse(null);
+        if (patient != null) {
+            in.sp.main.entity.Bed assignedBed = bedRepository.findByAssignedPatientUserId(patient.getUserId()).orElse(null);
+            model.addAttribute("assignedBed", assignedBed);
+            if (assignedBed == null) {
+                model.addAttribute("availableBeds", bedRepository.findByStatus("AVAILABLE"));
+            }
+        }
+        
+        // Ambulance Data
+        if (patient != null) {
+            model.addAttribute("ambulanceRequests", ambulanceRequestRepository.findByPatientUserId(patient.getUserId()));
+        }
+        
         return "patient/dashboard";
+    }
+
+    @PostMapping("/select-bed")
+    public String selectBed(@RequestParam Long bedId, Principal principal) {
+        User user = userService.findByEmail(principal.getName());
+        Patient patient = patientRepository.findById(user.getId()).orElse(null);
+        
+        if (patient != null) {
+            in.sp.main.entity.Bed bed = bedRepository.findById(bedId).orElse(null);
+            if (bed != null && "AVAILABLE".equals(bed.getStatus())) {
+                bed.setStatus("OCCUPIED");
+                bed.setAssignedPatient(patient);
+                bedRepository.save(bed);
+            }
+        }
+        return "redirect:/patient/dashboard";
     }
 
     @GetMapping("/appointments")
@@ -61,6 +96,19 @@ public class PatientController {
         model.addAttribute("user", user);
         model.addAttribute("appointments", appointmentRepository.findByPatientId(user.getId()));
         return "patient/appointments";
+    }
+
+    @GetMapping("/messages")
+    public String messages(Principal principal, Model model) {
+        User user = userService.findByEmail(principal.getName());
+        model.addAttribute("user", user);
+        
+        // Load contacts (doctors the patient has appointments with)
+        List<Appointment> appointments = appointmentRepository.findByPatientId(user.getId());
+        List<User> doctors = appointments.stream().map(Appointment::getDoctor).distinct().toList();
+        model.addAttribute("contacts", doctors);
+        
+        return "patient/messages";
     }
 
     @GetMapping("/medical-records")
@@ -160,6 +208,7 @@ public class PatientController {
                                   @RequestParam Long doctorId, 
                                   @RequestParam String appointmentDate, 
                                   @RequestParam String appointmentTime,
+                                  @RequestParam(value = "document", required = false) org.springframework.web.multipart.MultipartFile document,
                                   org.springframework.web.servlet.mvc.support.RedirectAttributes redirectAttributes) {
         User patientUser = userService.findByEmail(principal.getName());
         Doctor doctor = doctorRepository.findById(doctorId).orElse(null);
@@ -182,10 +231,38 @@ public class PatientController {
             appointment.setAppointmentDate(appointmentDate);
             appointment.setAppointmentTime(appointmentTime);
             appointment.setStatus("PENDING");
+            
+            // Handle file upload
+            if (document != null && !document.isEmpty()) {
+                try {
+                    String uploadDir = new java.io.File("src/main/webapp/uploads").getAbsolutePath();
+                    java.io.File dir = new java.io.File(uploadDir);
+                    if (!dir.exists()) dir.mkdirs();
+                    
+                    String fileName = System.currentTimeMillis() + "_" + document.getOriginalFilename();
+                    java.io.File dest = new java.io.File(dir, fileName);
+                    document.transferTo(dest);
+                    
+                    appointment.setDocumentUrl("/uploads/" + fileName);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            
             appointmentRepository.save(appointment);
         }
         
         return "redirect:/patient/dashboard";
+    }
+
+    @GetMapping("/appointment/request-video/{id}")
+    public String requestVideoConsultation(@PathVariable Long id, Principal principal) {
+        Appointment appointment = appointmentRepository.findById(id).orElse(null);
+        if (appointment != null && appointment.getPatient().getEmail().equals(principal.getName())) {
+            appointment.setStatus("VIDEO_REQUESTED");
+            appointmentRepository.save(appointment);
+        }
+        return "redirect:/patient/appointments";
     }
 
     @Autowired

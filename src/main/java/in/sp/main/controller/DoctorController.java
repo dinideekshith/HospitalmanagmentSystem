@@ -75,6 +75,19 @@ public class DoctorController {
         model.addAttribute("user", user);
         return "doctor/pending-approval";
     }
+
+    @GetMapping("/messages")
+    public String messages(Principal principal, Model model) {
+        User user = userService.findByEmail(principal.getName());
+        model.addAttribute("user", user);
+        
+        // Load contacts (patients the doctor has appointments with)
+        List<Appointment> appointments = appointmentRepository.findByDoctorId(user.getId());
+        List<User> patients = appointments.stream().map(Appointment::getPatient).distinct().toList();
+        model.addAttribute("contacts", patients);
+        
+        return "doctor/messages";
+    }
     
     @GetMapping("/profile")
     public String profile(Principal principal, Model model) {
@@ -144,6 +157,18 @@ public class DoctorController {
         return "redirect:/doctor/dashboard";
     }
     
+    @GetMapping("/appointment/approve-video/{id}")
+    public String approveVideoConsultation(@PathVariable Long id, Principal principal) {
+        Appointment appointment = appointmentRepository.findById(id).orElse(null);
+        if (appointment != null && appointment.getDoctor().getEmail().equals(principal.getName())) {
+            appointment.setStatus("VIDEO_APPROVED");
+            // Generate unique Jitsi meet URL
+            appointment.setMeetUrl("HMS_Consult_" + java.util.UUID.randomUUID().toString());
+            appointmentRepository.save(appointment);
+        }
+        return "redirect:/doctor/appointments";
+    }
+    
     // --- New Features (Phase 3) ---
     
     @Autowired
@@ -166,6 +191,26 @@ public class DoctorController {
         model.addAttribute("user", user);
         model.addAttribute("appointments", appointmentRepository.findByDoctorId(user.getId()));
         return "doctor/appointments";
+    }
+
+    @GetMapping("/appointment/view/{id}")
+    public String viewActiveAppointment(@PathVariable Long id, Principal principal, Model model) {
+        User doctorUser = userService.findByEmail(principal.getName());
+        Appointment appointment = appointmentRepository.findById(id).orElse(null);
+        if (appointment != null && appointment.getDoctor().getId().equals(doctorUser.getId())) {
+            model.addAttribute("user", doctorUser);
+            model.addAttribute("appointment", appointment);
+            
+            // Fetch comprehensive patient profile
+            in.sp.main.entity.Patient patientProfile = patientRepository.findById(appointment.getPatient().getId()).orElse(null);
+            model.addAttribute("patientProfile", patientProfile);
+            
+            // Full history for follow-up
+            model.addAttribute("pastRecords", medicalRecordRepository.findByPatient(appointment.getPatient()));
+            model.addAttribute("pastPrescriptions", prescriptionRepository.findByPatient(appointment.getPatient()));
+            return "doctor/active-appointment";
+        }
+        return "redirect:/doctor/appointments";
     }
 
     @GetMapping("/patients")
@@ -222,6 +267,9 @@ public class DoctorController {
     private in.sp.main.repository.BloodRequestRepository bloodRequestRepository;
     
     @Autowired
+    private in.sp.main.repository.BloodInventoryRepository bloodInventoryRepository;
+    
+    @Autowired
     private in.sp.main.repository.PatientRepository patientRepository;
 
     @GetMapping("/blood-bank")
@@ -233,6 +281,8 @@ public class DoctorController {
         List<Appointment> appointments = appointmentRepository.findByDoctorId(user.getId());
         List<User> patients = appointments.stream().map(Appointment::getPatient).distinct().toList();
         model.addAttribute("patients", patients);
+        
+        model.addAttribute("bloodInventory", bloodInventoryRepository.findAll());
         
         return "doctor/blood-bank";
     }
@@ -254,6 +304,22 @@ public class DoctorController {
             req.setStatus("PENDING");
             bloodRequestRepository.save(req);
         }
+        return "redirect:/doctor/blood-bank";
+    }
+
+    @PostMapping("/blood-bank/request-test")
+    public String requestBloodTest(Principal principal, @RequestParam Long patientId, @RequestParam String testDetails) {
+        User doctorUser = userService.findByEmail(principal.getName());
+        User patientUser = userService.findById(patientId);
+        
+        in.sp.main.entity.LabTestRequest request = new in.sp.main.entity.LabTestRequest();
+        request.setDoctor(doctorUser);
+        request.setPatient(patientUser);
+        request.setTestName("Blood Test: " + testDetails);
+        request.setStatus("PENDING");
+        request.setRequestDate(java.time.LocalDate.now());
+        labTestRequestRepository.save(request);
+        
         return "redirect:/doctor/blood-bank";
     }
 

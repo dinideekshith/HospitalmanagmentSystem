@@ -57,14 +57,25 @@ public class UserService {
         if (savedUser.getRole() == Role.PATIENT) {
             Patient p = new Patient();
             p.setUser(savedUser);
+            p.setBloodGroup("");
+            p.setGender("");
+            p.setDateOfBirth("");
+            p.setAddress("");
             patientRepository.save(p);
         } else if (savedUser.getRole() == Role.DOCTOR) {
             Doctor d = new Doctor();
             d.setUser(savedUser);
+            d.setSpecialization("");
+            d.setQualification("");
+            d.setExperienceYears(0);
+            d.setAvailabilitySchedule("");
             doctorRepository.save(d);
         } else if (savedUser.getRole() == Role.VENDOR) {
             Vendor v = new Vendor();
             v.setUser(savedUser);
+            v.setVendorType("");
+            v.setBusinessName("");
+            v.setAddress("");
             vendorRepository.save(v);
         }
         
