@@ -36,6 +36,12 @@
         </div>
         
         <div class="dashboard-grid">
+            <a href="/doctor/profile" class="service-card">
+                <div class="service-card-icon" style="background: #F0F6F6;"><i class="fas fa-user-edit"></i></div>
+                <h3>My Profile</h3>
+                <p>Update your personal and professional details.</p>
+            </a>
+            
             <a href="/doctor/appointments" class="service-card">
                 <div class="service-card-icon" style="background: #E8F4F4;"><i class="far fa-calendar-alt"></i></div>
                 <h3>Appointments</h3>

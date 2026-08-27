@@ -200,6 +200,24 @@ public class PatientController {
         java.util.List<String> available = new java.util.ArrayList<>(allSlots);
         available.removeAll(booked);
         
+        // Time travel fix: if date is today, remove slots that have already passed
+        java.time.LocalDate requestDate = java.time.LocalDate.parse(date);
+        java.time.LocalDate today = java.time.LocalDate.now();
+        
+        if (requestDate.isBefore(today)) {
+            // If date is in the past, return empty list
+            return new java.util.ArrayList<>();
+        }
+        
+        if (today.equals(requestDate)) {
+            java.time.LocalTime now = java.time.LocalTime.now();
+            available.removeIf(slot -> {
+                String startTimeString = slot.split(" - ")[0]; // e.g. "10:00"
+                java.time.LocalTime startTime = java.time.LocalTime.parse(startTimeString);
+                return startTime.isBefore(now);
+            });
+        }
+        
         return available;
     }
 
@@ -214,6 +232,24 @@ public class PatientController {
         Doctor doctor = doctorRepository.findById(doctorId).orElse(null);
         
         if (doctor != null) {
+            // Check if the requested date is in the past
+            java.time.LocalDate reqDate = java.time.LocalDate.parse(appointmentDate);
+            java.time.LocalDate currentDay = java.time.LocalDate.now();
+            
+            if (reqDate.isBefore(currentDay)) {
+                redirectAttributes.addFlashAttribute("error", "You cannot book an appointment in the past.");
+                return "redirect:/patient/book-appointment";
+            }
+            
+            // Time check if it's today
+            if (reqDate.equals(currentDay)) {
+                java.time.LocalTime reqTime = java.time.LocalTime.parse(appointmentTime.split(" - ")[0]);
+                if (reqTime.isBefore(java.time.LocalTime.now())) {
+                    redirectAttributes.addFlashAttribute("error", "The selected time slot has already passed.");
+                    return "redirect:/patient/book-appointment";
+                }
+            }
+
             // Check double booking
             boolean isBooked = appointmentRepository.findByDoctorId(doctorId).stream()
                 .anyMatch(a -> a.getAppointmentDate().equals(appointmentDate) && 

@@ -20,6 +20,12 @@
     </nav>
 
     <div class="container dashboard-wrapper">
+        <c:if test="${not empty error}">
+            <div class="alert alert-error" style="margin-bottom: 1rem;">${error}</div>
+        </c:if>
+        <c:if test="${not empty success}">
+            <div class="alert alert-success" style="background-color: #C6F6D5; color: #22543D; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border: 1px solid #9AE6B4;">${success}</div>
+        </c:if>
         <h2 class="text-primary">Registered Doctors</h2>
         <table class="data-table mt-2">
             <thead>
@@ -47,7 +53,7 @@
                                     <form action="/admin/restore-access" method="post" style="display:inline;">
                                         <input type="hidden" name="id" value="${doctor.user.id}">
                                         <input type="hidden" name="returnUrl" value="/admin/doctors">
-                                        <button type="submit" class="btn btn-sm btn-outline">Restore Access</button>
+                                        <button type="submit" class="btn btn-sm btn-outline">Restore</button>
                                     </form>
                                 </c:when>
                                 <c:otherwise>
@@ -55,10 +61,16 @@
                                     <form action="/admin/revoke-access" method="post" style="display:inline;">
                                         <input type="hidden" name="id" value="${doctor.user.id}">
                                         <input type="hidden" name="returnUrl" value="/admin/doctors">
-                                        <button type="submit" class="btn btn-sm btn-error">Revoke Access</button>
+                                        <button type="submit" class="btn btn-sm btn-outline" style="border-color: #DD6B20; color: #DD6B20;">Revoke</button>
                                     </form>
                                 </c:otherwise>
                             </c:choose>
+                            
+                            <form action="/admin/delete-user" method="post" style="display:inline; margin-left: 0.5rem;" onsubmit="return confirm('WARNING: This will permanently delete the doctor and all their data from the database. Proceed?');">
+                                <input type="hidden" name="id" value="${doctor.user.id}">
+                                <input type="hidden" name="returnUrl" value="/admin/doctors">
+                                <button type="submit" class="btn btn-sm btn-error"><i class="fas fa-trash"></i> Delete</button>
+                            </form>
                         </td>
                     </tr>
                 </c:forEach>

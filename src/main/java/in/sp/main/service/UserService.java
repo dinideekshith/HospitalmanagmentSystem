@@ -108,4 +108,19 @@ public class UserService {
     public java.util.List<User> getAllUsers() {
         return userRepository.findAll();
     }
+    
+    @org.springframework.transaction.annotation.Transactional
+    public void deleteUser(Long id) {
+        User user = findById(id);
+        if (user != null) {
+            if (user.getRole() == Role.DOCTOR) {
+                doctorRepository.deleteById(id);
+            } else if (user.getRole() == Role.PATIENT) {
+                patientRepository.deleteById(id);
+            } else if (user.getRole() == Role.VENDOR) {
+                vendorRepository.deleteById(id);
+            }
+            userRepository.delete(user);
+        }
+    }
 }

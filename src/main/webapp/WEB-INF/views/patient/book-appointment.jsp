@@ -63,8 +63,12 @@
             const doctorSelect = document.getElementById('doctorId');
             const timeSelect = document.getElementById('appointmentTime');
             
-            // Set minimum date to today
-            const today = new Date().toISOString().split('T')[0];
+            // Set minimum date to today (using local timezone, not UTC)
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const today = year + '-' + month + '-' + day;
             dateInput.setAttribute('min', today);
             
             function fetchAvailableSlots() {

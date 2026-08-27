@@ -80,5 +80,22 @@
             </form>
         </div>
     </div>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        const today = year + '-' + month + '-' + day;
+        document.querySelectorAll('input[type="date"]').forEach(function(input) {
+            if (!input.hasAttribute('min') || input.getAttribute('min') < today) {
+                input.setAttribute('min', today);
+            }
+        });
+    });
+</script>
 </body>
 </html>
+
+
+

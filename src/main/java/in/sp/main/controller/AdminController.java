@@ -160,4 +160,15 @@ public class AdminController {
         }
         return "redirect:" + returnUrl;
     }
+
+    @PostMapping("/delete-user")
+    public String deleteUser(@org.springframework.web.bind.annotation.RequestParam("id") Long id, @org.springframework.web.bind.annotation.RequestParam("returnUrl") String returnUrl, org.springframework.web.servlet.mvc.support.RedirectAttributes redirectAttributes) {
+        try {
+            userService.deleteUser(id);
+            redirectAttributes.addFlashAttribute("success", "User successfully deleted from the database.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Failed to delete user. They may have dependent records (e.g., appointments).");
+        }
+        return "redirect:" + returnUrl;
+    }
 }

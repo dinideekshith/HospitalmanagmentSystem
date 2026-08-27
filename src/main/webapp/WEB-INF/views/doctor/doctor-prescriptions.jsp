@@ -42,6 +42,13 @@
             </div>
         </div>
         
+        <c:if test="${not empty error}">
+            <div class="alert alert-error" style="margin-bottom: 1.5rem;"><i class="fas fa-exclamation-circle"></i> ${error}</div>
+        </c:if>
+        <c:if test="${not empty success}">
+            <div class="alert alert-success" style="background-color: #C6F6D5; color: #22543D; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; border: 1px solid #9AE6B4;"><i class="fas fa-check-circle"></i> ${success}</div>
+        </c:if>
+
         <div style="display: grid; gap: 1.5rem; max-width: 800px;">
             <c:choose>
                 <c:when test="${empty prescriptions}">

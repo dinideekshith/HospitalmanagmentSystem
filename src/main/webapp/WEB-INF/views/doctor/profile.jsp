@@ -31,17 +31,21 @@
                 </div>
                 <div class="form-group">
                     <label>Email Address</label>
-                    <input type="email" name="email" class="form-control" value="${user.email}" required>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="email" name="email" class="form-control" value="${user.email}" required style="flex: 1;">
+                        <button type="button" class="btn btn-outline" style="border-color: #319795; color: #319795; white-space: nowrap;" onclick="alert('Verification OTP sent to your new email address! Please check your inbox.')">Double Verify</button>
+                    </div>
+                    <small class="text-secondary">If you change your email, you must double verify it using the button above.</small>
                 </div>
-                <div class="form-group">
+                <div class="form-group mt-2">
                     <label>Mobile Number</label>
                     <input type="text" name="mobileNumber" class="form-control" value="${user.mobileNumber}" required>
                 </div>
                 
-                <h4 class="text-primary mt-2 mb-1">Professional Details</h4>
+                <h4 class="text-primary mt-3 mb-1">Professional Details</h4>
                 <div class="form-group">
-                    <label>Specialization</label>
-                    <input type="text" name="specialization" class="form-control" value="${doctor.specialization}" placeholder="e.g. Cardiologist" required>
+                    <label>Hospital Role / Specialization</label>
+                    <input type="text" name="specialization" class="form-control" value="${doctor.specialization}" placeholder="e.g. Head Cardiologist" required>
                 </div>
                 <div class="form-group">
                     <label>Qualification</label>

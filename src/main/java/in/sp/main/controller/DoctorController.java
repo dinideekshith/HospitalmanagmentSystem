@@ -335,9 +335,12 @@ public class DoctorController {
         return "doctor/add-prescription";
     }
 
+    @Autowired
+    private in.sp.main.repository.MedicineRepository medicineRepository;
+
     @PostMapping("/add-prescription")
     public String addPrescription(@ModelAttribute in.sp.main.entity.Prescription prescription, 
-                                 @RequestParam Long patientId, Principal principal) {
+                                 @RequestParam Long patientId, Principal principal, org.springframework.web.servlet.mvc.support.RedirectAttributes redirectAttributes) {
         User doctorUser = userService.findByEmail(principal.getName());
         User patientUser = userService.findById(patientId);
         
@@ -345,6 +348,29 @@ public class DoctorController {
         prescription.setPatient(patientUser);
         prescription.setStatus("PENDING"); // Pending fulfillment by Pharmacy
         prescriptionRepository.save(prescription);
+        
+        // --- Inventory Integration: Deduct stock automatically ---
+        try {
+            List<in.sp.main.entity.Medicine> matchingMedicines = medicineRepository.findAll().stream()
+                .filter(m -> m.getName().toLowerCase().contains(prescription.getMedicineName().toLowerCase()))
+                .toList();
+                
+            if (!matchingMedicines.isEmpty()) {
+                in.sp.main.entity.Medicine medicine = matchingMedicines.get(0);
+                // Deduct 1 pack/course from inventory
+                if (medicine.getQuantity() > 0) {
+                    medicine.setQuantity(medicine.getQuantity() - 1);
+                    medicineRepository.save(medicine);
+                    redirectAttributes.addFlashAttribute("success", "Prescription saved and 1 unit deducted from Pharmacy Inventory.");
+                } else {
+                    redirectAttributes.addFlashAttribute("error", "Prescription saved, but " + medicine.getName() + " is OUT OF STOCK in Pharmacy!");
+                }
+            } else {
+                redirectAttributes.addFlashAttribute("success", "Prescription saved successfully.");
+            }
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("success", "Prescription saved successfully.");
+        }
         
         return "redirect:/doctor/prescriptions";
     }
