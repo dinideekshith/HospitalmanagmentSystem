@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hospital Care | Premium Healthcare Services</title>
-    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         /* Landing Page Specific CSS */
@@ -175,8 +175,8 @@
                 <a href="#services" style="text-decoration: none; color: var(--text-primary); font-weight: 500;">Services</a>
                 <a href="#doctors" style="text-decoration: none; color: var(--text-primary); font-weight: 500;">Doctors</a>
                 <a href="#contact" style="text-decoration: none; color: var(--text-primary); font-weight: 500;">Contact</a>
-                <a href="/login" class="btn btn-primary" style="padding: 0.6rem 1.5rem;"><i class="fas fa-sign-in-alt"></i> Login</a>
-                <a href="/register" class="btn btn-outline" style="border-color: var(--primary-teal); color: var(--primary-teal);">Register</a>
+                <a th:href="@{/login}" class="btn btn-primary" style="padding: 0.6rem 1.5rem;"><i class="fas fa-sign-in-alt"></i> Login</a>
+                <a th:href="@{/register}" class="btn btn-outline" style="border-color: var(--primary-teal); color: var(--primary-teal);">Register</a>
             </div>
         </div>
     </nav>
